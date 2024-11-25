@@ -3,15 +3,14 @@ import { pool } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { decodeJwt } from 'jose';
 
-type Props = {
+interface Context {
   params: { id: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
 }
 
 export async function GET(
-  _request: Request,
-  { params }: Props
-) {
+  request: Request,
+  context: Context
+): Promise<NextResponse> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -25,7 +24,7 @@ export async function GET(
 
     const [proposals] = await pool.execute(
       'SELECT * FROM proposals WHERE id = ? AND user_id = ?',
-      [params.id, userId]
+      [context.params.id, userId]
     );
 
     if (!Array.isArray(proposals) || proposals.length === 0) {
