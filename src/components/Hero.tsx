@@ -70,6 +70,8 @@ const Hero = () => {
                   width={100} 
                   height={30}
                   className="opacity-50 hover:opacity-75"
+                  priority
+                  loading="eager"
                 />
                 <Image 
                   src="/fedex.svg" 
@@ -77,6 +79,8 @@ const Hero = () => {
                   width={100} 
                   height={30}
                   className="opacity-50 hover:opacity-75"
+                  priority
+                  loading="eager"
                 />
                 <Image 
                   src="/goldair.svg" 
@@ -84,6 +88,8 @@ const Hero = () => {
                   width={100} 
                   height={30}
                   className="opacity-50 hover:opacity-75"
+                  priority
+                  loading="eager"
                 />
                 <Image 
                   src="/oreilly.svg" 
@@ -91,6 +97,8 @@ const Hero = () => {
                   width={100} 
                   height={30}
                   className="opacity-50 hover:opacity-75"
+                  priority
+                  loading="eager"
                 />
               </div>
             </div>

@@ -1,9 +1,11 @@
+import dynamic from 'next/dynamic'
 import Hero from '@/components/Hero'
-import Features from '@/components/Features'
-import HowItWorks from '@/components/HowItWorks'
-import ROICalculator from '@/components/ROICalculator'
-import Pricing from '@/components/Pricing'
-import FAQ from '@/components/FAQ'
+
+const Features = dynamic(() => import('@/components/Features'))
+const HowItWorks = dynamic(() => import('@/components/HowItWorks'))
+const ROICalculator = dynamic(() => import('@/components/ROICalculator'))
+const Pricing = dynamic(() => import('@/components/Pricing'))
+const FAQ = dynamic(() => import('@/components/FAQ'))
 
 export default function Home() {
   return (

@@ -12,7 +12,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="dashboard-container">
       <DashboardNavbar />
       <main className="max-w-7xl mx-auto px-6 py-8">
         {children}
