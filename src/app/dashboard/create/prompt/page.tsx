@@ -7,7 +7,6 @@ import Link from 'next/link';
 export default function PromptProposal() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const [generatedProposal, setGeneratedProposal] = useState('');
   const [error, setError] = useState('');
 
   const examplePrompts = [
@@ -37,7 +36,6 @@ export default function PromptProposal() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setGeneratedProposal('');
     
     try {
       const response = await fetch('/api/generate-proposal', {
@@ -53,7 +51,6 @@ export default function PromptProposal() {
       }
 
       const data: { proposal: string; id: string } = await response.json();
-      setGeneratedProposal(data.proposal);
       window.location.href = `/dashboard/proposals/${data.id}`;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate proposal. Please try again.');
