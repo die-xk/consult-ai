@@ -3,9 +3,14 @@ import { pool } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { decodeJwt } from 'jose';
 
+type Props = {
+  params: { id: string }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params }: Props
 ) {
   try {
     const cookieStore = await cookies();
