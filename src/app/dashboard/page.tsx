@@ -19,7 +19,7 @@ export default function Dashboard() {
       title: 'Create',
       description: 'Create a new proposal',
       icon: <IoCreateOutline className="w-8 h-8" />,
-      href: '/dashboard/create',
+      href: '/dashboard/create/select',
       disabled: false
     },
     {
