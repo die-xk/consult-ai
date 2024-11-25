@@ -52,8 +52,9 @@ export default function PromptProposal() {
         throw new Error(`Failed to generate proposal: ${response.statusText}`);
       }
 
-      const data: { proposal: string } = await response.json();
+      const data: { proposal: string; id: string } = await response.json();
       setGeneratedProposal(data.proposal);
+      window.location.href = `/dashboard/proposals/${data.id}`;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate proposal. Please try again.');
       console.error('Error:', err);
@@ -62,7 +63,7 @@ export default function PromptProposal() {
     }
   };
 
-  const useExample = (promptText: string) => {
+  const handleExampleClick = (promptText: string) => {
     setPrompt(promptText);
   };
 
@@ -127,7 +128,7 @@ export default function PromptProposal() {
             {examplePrompts.map((example, index) => (
               <button
                 key={index}
-                onClick={() => useExample(example.prompt)}
+                onClick={() => handleExampleClick(example.prompt)}
                 className="p-6 bg-[#2B3B37] rounded-xl border border-[#3C4C47] hover:bg-[#344440] transition-all duration-200 text-left group"
               >
                 <div className="flex items-start gap-4">

@@ -50,6 +50,27 @@ export default function Proposals() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="py-6 flex flex-col items-center">
+        <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8">
+          <div className="flex items-center gap-4 mb-8">
+            <Link 
+              href="/dashboard"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <IoArrowBack className="w-6 h-6" />
+            </Link>
+            <h1 className="text-2xl font-bold text-white">Proposals</h1>
+          </div>
+          <div className="bg-red-900/50 border border-red-500 rounded-lg p-4">
+            <p className="text-red-200">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-6 flex flex-col items-center">
       <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8">
