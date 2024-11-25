@@ -1,5 +1,9 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
+import { pool } from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
+import { cookies } from 'next/headers';
+import { decodeJwt } from 'jose';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -59,8 +63,22 @@ Output the proposal in markdown format with clear section breaks and formatting.
 
 export async function POST(req: Request) {
   try {
+    // Get the token from cookies (already verified by middleware)
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Decode the token to get the user ID
+    const decoded = decodeJwt(token);
+    const userId = decoded.sub; // Firebase UID is stored in the 'sub' claim
+
+    // Get the prompt from the request body
     const { prompt } = await req.json();
 
+    // Generate the proposal using OpenAI
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-0125",
       messages: [
@@ -77,7 +95,20 @@ export async function POST(req: Request) {
       max_tokens: 4000,
     });
 
-    return NextResponse.json({ proposal: completion.choices[0].message.content });
+    const proposalContent = completion.choices[0].message.content;
+
+    // Save the proposal to the database
+    const proposalId = uuidv4();
+    await pool.execute(
+      'INSERT INTO proposals (id, user_id, prompt, content) VALUES (?, ?, ?, ?)',
+      [proposalId, userId, prompt, proposalContent]
+    );
+
+    return NextResponse.json({ 
+      proposal: proposalContent,
+      id: proposalId
+    });
+
   } catch (error) {
     console.error('Error:', error);
     return NextResponse.json({ error: 'Failed to generate proposal' }, { status: 500 });
