@@ -64,42 +64,11 @@ const Hero = () => {
             <div className="pt-12">
               <p className="text-gray-500 text-sm mb-4">Trusted by forward-thinking businesses</p>
               <div className="flex space-x-8">
-                <Image 
-                  src="/bigelow.svg" 
-                  alt="Bigelow" 
-                  width={100} 
-                  height={30}
-                  className="opacity-50 hover:opacity-75"
-                  priority
-                  loading="eager"
-                />
-                <Image 
-                  src="/fedex.svg" 
-                  alt="FedEx" 
-                  width={100} 
-                  height={30}
-                  className="opacity-50 hover:opacity-75"
-                  priority
-                  loading="eager"
-                />
-                <Image 
-                  src="/goldair.svg" 
-                  alt="Goldair" 
-                  width={100} 
-                  height={30}
-                  className="opacity-50 hover:opacity-75"
-                  priority
-                  loading="eager"
-                />
-                <Image 
-                  src="/oreilly.svg" 
-                  alt="O'Reilly" 
-                  width={100} 
-                  height={30}
-                  className="opacity-50 hover:opacity-75"
-                  priority
-                  loading="eager"
-                />
+                {/* Placeholder logos - Replace with actual company logos */}
+                <div className="w-[100px] h-[30px] bg-gray-800 rounded opacity-50 hover:opacity-75 transition-opacity" />
+                <div className="w-[100px] h-[30px] bg-gray-800 rounded opacity-50 hover:opacity-75 transition-opacity" />
+                <div className="w-[100px] h-[30px] bg-gray-800 rounded opacity-50 hover:opacity-75 transition-opacity" />
+                <div className="w-[100px] h-[30px] bg-gray-800 rounded opacity-50 hover:opacity-75 transition-opacity" />
               </div>
             </div>
           </div>
