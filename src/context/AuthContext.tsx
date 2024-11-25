@@ -13,6 +13,7 @@ import {
   GoogleAuthProvider
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
+import Cookies from 'js-cookie';
 
 interface AuthContextType {
   user: User | null;
@@ -31,7 +32,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Get the ID token
+        const token = await user.getIdToken();
+        // Store it in a cookie
+        Cookies.set('token', token, { expires: 7 }); // 7 days expiry
+      } else {
+        // Remove token when user is null
+        Cookies.remove('token');
+      }
       setUser(user);
       setLoading(false);
     });
