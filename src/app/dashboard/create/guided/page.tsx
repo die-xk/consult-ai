@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 export default function CreateProposal() {
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
 
   return (
     <div className="py-6 flex flex-col items-center">

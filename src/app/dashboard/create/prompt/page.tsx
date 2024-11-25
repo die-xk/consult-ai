@@ -37,6 +37,7 @@ export default function PromptProposal() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setGeneratedProposal('');
     
     try {
       const response = await fetch('/api/generate-proposal', {
@@ -48,13 +49,13 @@ export default function PromptProposal() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate proposal');
+        throw new Error(`Failed to generate proposal: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data: { proposal: string } = await response.json();
       setGeneratedProposal(data.proposal);
     } catch (err) {
-      setError('Failed to generate proposal. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to generate proposal. Please try again.');
       console.error('Error:', err);
     } finally {
       setLoading(false);
@@ -81,6 +82,11 @@ export default function PromptProposal() {
 
         {/* Main Content */}
         <div className="bg-[#1B2B27] rounded-xl shadow-2xl px-6 py-8">
+          {error && (
+            <div className="mb-4 p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-white text-lg font-medium mb-4">
