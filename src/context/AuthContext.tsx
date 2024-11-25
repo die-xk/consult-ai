@@ -14,9 +14,11 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import Cookies from 'js-cookie';
+import { createOrUpdateUser, DBUser } from '@/services/userService';
 
 interface AuthContextType {
   user: User | null;
+  dbUser: DBUser | null;
   loading: boolean;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
@@ -29,18 +31,36 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [dbUser, setDbUser] = useState<DBUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Get the ID token
         const token = await user.getIdToken();
-        // Store it in a cookie
-        Cookies.set('token', token, { expires: 7 }); // 7 days expiry
+        Cookies.set('token', token, { expires: 7 });
+        
+        // Sync user with database by sending the user object
+        try {
+          const response = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName
+            }}),
+          });
+          const syncedUser = await response.json();
+          setDbUser(syncedUser);
+        } catch (error) {
+          console.error('Error syncing user with database:', error);
+        }
       } else {
-        // Remove token when user is null
         Cookies.remove('token');
+        setDbUser(null);
       }
       setUser(user);
       setLoading(false);
@@ -78,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthContext.Provider value={{ 
       user, 
+      dbUser,
       loading, 
       signUp, 
       signIn, 
