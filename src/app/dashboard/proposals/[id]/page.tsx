@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { IoArrowBack, IoDownloadOutline, IoShareSocialOutline } from 'react-icons/io5';
+import { IoArrowBack, IoDownloadOutline, IoShareSocialOutline, IoDocumentTextOutline, IoInformationCircleOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
+import useSWR from 'swr';
+import clsx from 'clsx';
 
 interface Proposal {
   id: string;
@@ -14,33 +16,35 @@ interface Proposal {
   user_id: string;
 }
 
+type Tab = 'proposal' | 'prompt';
+
 export default function ViewProposal() {
+  const [activeTab, setActiveTab] = useState<Tab>('proposal');
   const { id } = useParams();
-  const [proposal, setProposal] = useState<Proposal | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch proposal');
+    return res.json();
+  };
+  
+  const { data: proposal, error, isLoading } = useSWR<Proposal>(
+    `/api/proposals/${id}`,
+    fetcher
+  );
 
-  useEffect(() => {
-    const fetchProposal = async () => {
-      try {
-        const response = await fetch(`/api/proposals/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch proposal');
-        }
-        const data = await response.json();
-        setProposal(data);
-      } catch (err) {
-        setError('Failed to load proposal');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const memoizedContent = useMemo(() => {
+    return <ReactMarkdown>{proposal?.content}</ReactMarkdown>;
+  }, [proposal?.content]);
 
-    fetchProposal();
-  }, [id]);
+  const handleShare = useCallback(() => {
+    navigator.clipboard.writeText(window.location.href);
+  }, []);
 
-  if (loading) {
+  const handleExport = useCallback(() => {
+    window.print();
+  }, []);
+
+  if (isLoading) {
     return (
       <div className="py-6 flex flex-col items-center">
         <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8">
@@ -64,7 +68,7 @@ export default function ViewProposal() {
   }
 
   return (
-    <div className="py-6 flex flex-col items-center">
+    <div className="py-6 flex flex-col items-center min-h-screen bg-[#1B2B27]">
       <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -79,14 +83,14 @@ export default function ViewProposal() {
           </div>
           <div className="flex gap-4">
             <button
-              onClick={() => window.print()}
+              onClick={handleExport}
               className="flex items-center gap-2 px-4 py-2 bg-[#2B3B37] text-white rounded-lg hover:bg-[#344440] transition-colors duration-200"
             >
               <IoDownloadOutline className="w-5 h-5" />
               Export
             </button>
             <button
-              onClick={() => navigator.clipboard.writeText(window.location.href)}
+              onClick={handleShare}
               className="flex items-center gap-2 px-4 py-2 bg-[#7CFF9B] text-[#1B2B27] rounded-lg hover:bg-[#6ee889] transition-colors duration-200"
             >
               <IoShareSocialOutline className="w-5 h-5" />
@@ -95,17 +99,52 @@ export default function ViewProposal() {
           </div>
         </div>
 
-        {/* Proposal Content */}
-        <div className="bg-[#1B2B27] rounded-xl shadow-2xl px-8 py-10">
-          <div className="prose prose-invert max-w-none">
-            <ReactMarkdown>{proposal.content}</ReactMarkdown>
-          </div>
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={() => setActiveTab('proposal')}
+            className={clsx(
+              'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200',
+              activeTab === 'proposal'
+                ? 'bg-[#7CFF9B] text-[#1B2B27]'
+                : 'bg-[#2B3B37] text-white hover:bg-[#344440]'
+            )}
+          >
+            <IoDocumentTextOutline className="w-5 h-5" />
+            Proposal
+          </button>
+          <button
+            onClick={() => setActiveTab('prompt')}
+            className={clsx(
+              'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200',
+              activeTab === 'prompt'
+                ? 'bg-[#7CFF9B] text-[#1B2B27]'
+                : 'bg-[#2B3B37] text-white hover:bg-[#344440]'
+            )}
+          >
+            <IoInformationCircleOutline className="w-5 h-5" />
+            Original Prompt
+          </button>
         </div>
 
-        {/* Original Prompt */}
-        <div className="mt-8 bg-[#2B3B37] rounded-xl p-6">
-          <h2 className="text-lg font-medium text-white mb-2">Original Prompt</h2>
-          <p className="text-gray-400">{proposal.prompt}</p>
+        {/* Content */}
+        <div className="bg-[#2B3B37] rounded-xl shadow-2xl p-8">
+          {activeTab === 'proposal' ? (
+            <div className="prose prose-invert max-w-none">
+              {memoizedContent}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h2 className="text-xl font-medium text-white">Original Prompt</h2>
+              <div className="p-4 bg-[#1B2B27] rounded-lg">
+                <p className="text-gray-300">{proposal.prompt}</p>
+              </div>
+              <div className="flex items-start gap-2 mt-4 text-sm text-gray-400">
+                <IoInformationCircleOutline className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p>This prompt was used to generate the proposal using our AI system.</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

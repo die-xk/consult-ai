@@ -1,14 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { decodeJwt } from 'jose';
+import { RowDataPacket } from 'mysql2';
+
+interface ProposalRow extends RowDataPacket {
+  id: string;
+  content: string;
+  prompt: string;
+  user_id: string;
+  created_at: string;
+}
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
@@ -17,23 +26,14 @@ export async function GET(
     }
 
     const decoded = decodeJwt(token);
-    const userId = decoded.sub;
-
-    const [proposals] = await pool.execute(
+    const [proposals] = await pool.execute<ProposalRow[]>(
       'SELECT * FROM proposals WHERE id = ? AND user_id = ?',
-      [id, userId]
+      [id, decoded.sub]
     );
 
-    if (!Array.isArray(proposals) || proposals.length === 0) {
-      return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(proposals[0]);
+    return NextResponse.json(proposals[0] || { error: 'Not found' });
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch proposal' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 
