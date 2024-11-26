@@ -4,16 +4,24 @@ import { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { IoArrowBack, IoDownloadOutline, IoShareSocialOutline, IoDocumentTextOutline, IoInformationCircleOutline } from 'react-icons/io5';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
 import useSWR from 'swr';
 import clsx from 'clsx';
 
+interface Subsection {
+  title: string;
+  content: string[];
+}
+
+interface Section {
+  title: string;
+  subsections: Subsection[];
+}
+
 interface Proposal {
   id: string;
-  content: string;
   prompt: string;
   created_at: string;
-  user_id: string;
+  sections: Section[];
 }
 
 type Tab = 'proposal' | 'prompt';
@@ -21,20 +29,49 @@ type Tab = 'proposal' | 'prompt';
 export default function ViewProposal() {
   const [activeTab, setActiveTab] = useState<Tab>('proposal');
   const { id } = useParams();
-  const fetcher = async (url: string) => {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Failed to fetch proposal');
-    return res.json();
-  };
   
   const { data: proposal, error, isLoading } = useSWR<Proposal>(
     `/api/proposals/${id}`,
-    fetcher
+    async (url: string) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch proposal');
+      const data = await res.json();
+      console.log('Fetched proposal data:', data);
+      return data;
+    }
   );
 
-  const memoizedContent = useMemo(() => {
-    return <ReactMarkdown>{proposal?.content}</ReactMarkdown>;
-  }, [proposal?.content]);
+  const renderSubsection = (subsection: Subsection) => (
+    <div className="mb-6">
+      <h3 className="text-xl font-medium text-[#7CFF9B] mb-3">{subsection.title}</h3>
+      <div className="space-y-2">
+        {subsection.content.map((line, index) => (
+          <p key={index} className="text-gray-300">
+            {line.startsWith('-') ? (
+              <span className="block ml-4">• {line.slice(1).trim()}</span>
+            ) : (
+              line
+            )}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderSection = (section: Section) => (
+    <div className="mb-12">
+      <h2 className="text-2xl font-semibold text-white mb-6 pb-2 border-b border-[#3C4C47]">
+        {section.title}
+      </h2>
+      <div className="space-y-6">
+        {section.subsections.map((subsection, index) => (
+          <div key={index}>
+            {renderSubsection(subsection)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const handleShare = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
@@ -129,19 +166,19 @@ export default function ViewProposal() {
 
         {/* Content */}
         <div className="bg-[#2B3B37] rounded-xl shadow-2xl p-8">
-          {activeTab === 'proposal' ? (
-            <div className="prose prose-invert max-w-none">
-              {memoizedContent}
+          {activeTab === 'proposal' && proposal ? (
+            <div className="space-y-12">
+              {proposal.sections.map((section, index) => (
+                <div key={index}>
+                  {renderSection(section)}
+                </div>
+              ))}
             </div>
           ) : (
             <div className="space-y-4">
               <h2 className="text-xl font-medium text-white">Original Prompt</h2>
               <div className="p-4 bg-[#1B2B27] rounded-lg">
-                <p className="text-gray-300">{proposal.prompt}</p>
-              </div>
-              <div className="flex items-start gap-2 mt-4 text-sm text-gray-400">
-                <IoInformationCircleOutline className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p>This prompt was used to generate the proposal using our AI system.</p>
+                <p className="text-gray-300">{proposal?.prompt}</p>
               </div>
             </div>
           )}

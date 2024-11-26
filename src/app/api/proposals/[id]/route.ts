@@ -12,6 +12,14 @@ interface ProposalRow extends RowDataPacket {
   created_at: string;
 }
 
+interface Section {
+  title: string;
+  subsections: {
+    title: string;
+    content: string[];
+  }[];
+}
+
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -31,7 +39,47 @@ export async function GET(
       [id, decoded.sub]
     );
 
-    return NextResponse.json(proposals[0] || { error: 'Not found' });
+    if (!proposals[0]) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
+    // Split content into main sections
+    const mainSections = proposals[0].content.split('\n# ').filter(Boolean);
+    
+    const formatted = {
+      id: proposals[0].id,
+      prompt: proposals[0].prompt,
+      created_at: proposals[0].created_at,
+      sections: mainSections.map(section => {
+        const [title, ...content] = section.split('\n');
+        const subsections = content
+          .join('\n')
+          .split('\n### ')
+          .filter(Boolean)
+          .map(sub => {
+            const [subTitle, ...subContent] = sub.split('\n');
+            return {
+              title: subTitle.trim(),
+              content: subContent
+                .filter(line => line.trim())
+                .map(line => {
+                  // Handle bullet points
+                  if (line.trim().startsWith('-')) {
+                    return line.trim();
+                  }
+                  return line.trim();
+                })
+            };
+          });
+
+        return {
+          title: title.trim(),
+          subsections
+        };
+      })
+    };
+
+    return NextResponse.json(formatted);
   } catch (error) {
     console.error('Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
