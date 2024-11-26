@@ -1,17 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { decodeJwt } from 'jose';
 
-interface Context {
-  params: { id: string }
-}
-
 export async function GET(
-  request: Request,
-  context: Context
-): Promise<NextResponse> {
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
@@ -24,7 +21,7 @@ export async function GET(
 
     const [proposals] = await pool.execute(
       'SELECT * FROM proposals WHERE id = ? AND user_id = ?',
-      [context.params.id, userId]
+      [id, userId]
     );
 
     if (!Array.isArray(proposals) || proposals.length === 0) {

@@ -15,4 +15,10 @@ export default {
     },
   },
   plugins: [],
+  future: {
+    hoverOnlyWhenSupported: true,
+    respectDefaultRingColorOpacity: true,
+    disableColorOpacityUtilitiesByDefault: true,
+    relativeContentPathsByDefault: true,
+  },
 } satisfies Config;

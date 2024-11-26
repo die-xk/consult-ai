@@ -7,19 +7,19 @@ const HowItWorks = () => {
       number: "01",
       title: "Enter Client Details",
       description: "Basic project information and client needs",
-      image: "/step1-image.png" // You'll need to add appropriate images
+      image: "/step1.png" // You'll need to add appropriate images
     },
     {
       number: "02",
       title: "AI Does the Heavy Lifting",
       description: "Our AI crafts a professional proposal using proven frameworks",
-      image: "/step2-image.png"
+      image: "/step2.png"
     },
     {
       number: "03",
       title: "Review & Send",
       description: "Make quick edits and send to your client in minutes",
-      image: "/step3-image.png"
+      image: "/step3.png"
     }
   ]
 
