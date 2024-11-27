@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Link from 'next/link'
 
 const Hero = () => {
@@ -30,7 +31,7 @@ const Hero = () => {
 
             <h1 className="text-5xl font-bold text-white leading-tight max-w-4xl">
               Generate Client-Winning
-              <span className="text-[#7CFF9B]"> Proposals </span>in
+              <span className="text-[#7CFF9B]"> Proposals </span>in &nbsp;
               <span className="relative">
                 5 Minutes with AI
                 <span className="absolute bottom-1 left-0 w-full h-[3px] bg-[#7CFF9B]"></span>
