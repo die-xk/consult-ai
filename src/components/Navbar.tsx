@@ -102,84 +102,84 @@ const Navbar = () => {
               )}
             </div>
           </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden pt-4 pb-3 border-t border-[#7CFF9B]/10 mt-4">
-              <div className="space-y-4">
-                <Link 
-                  href="/features" 
-                  className="block text-gray-300 hover:text-white text-sm py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Features
-                </Link>
-                <Link 
-                  href="/use-case" 
-                  className="block text-gray-300 hover:text-white text-sm py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Use Case
-                </Link>
-                <Link 
-                  href="/pricing" 
-                  className="block text-gray-300 hover:text-white text-sm py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Pricing
-                </Link>
-                <Link 
-                  href="/blogs" 
-                  className="block text-gray-300 hover:text-white text-sm py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Blogs
-                </Link>
-                
-                <div className="pt-4 border-t border-[#7CFF9B]/10">
-                  {!user ? (
-                    <div className="space-y-4">
-                      <Link 
-                        href="/login" 
-                        className="block text-gray-300 hover:text-white text-sm py-2"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Login
-                      </Link>
-                      <Link 
-                        href="/signup" 
-                        className="block bg-[#2B3B37] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#344440] text-center"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Get Started
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <Link 
-                        href="/dashboard" 
-                        className="block text-gray-300 hover:text-white text-sm py-2"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                      <button 
-                        onClick={() => {
-                          setShowModal(true)
-                          setIsMobileMenuOpen(false)
-                        }}
-                        className="block text-gray-300 hover:text-white text-sm py-2 w-full text-left"
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex flex-col items-center justify-center">
+          <div className="space-y-4 text-center">
+            <Link 
+              href="/features" 
+              className="block text-gray-300 hover:text-white text-lg py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link 
+              href="/use-case" 
+              className="block text-gray-300 hover:text-white text-lg py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Use Case
+            </Link>
+            <Link 
+              href="/pricing" 
+              className="block text-gray-300 hover:text-white text-lg py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link 
+              href="/blogs" 
+              className="block text-gray-300 hover:text-white text-lg py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Blogs
+            </Link>
+            
+            <div className="pt-4 border-t border-[#7CFF9B]/10">
+              {!user ? (
+                <div className="space-y-4">
+                  <Link 
+                    href="/login" 
+                    className="block text-gray-300 hover:text-white text-lg py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/signup" 
+                    className="block bg-[#2B3B37] text-white px-5 py-2 rounded-full text-lg font-medium hover:bg-[#344440] text-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Link 
+                    href="/dashboard" 
+                    className="block text-gray-300 hover:text-white text-lg py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setShowModal(true)
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="block text-gray-300 hover:text-white text-lg py-2 w-full text-center"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sign Out Confirmation Modal */}
       {showModal && (
