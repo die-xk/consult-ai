@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ConsultAI - Create Business Proposals in 5 Minutes",
+  title: "Modi AI - Create Business Proposals in 5 Minutes",
   description: "Generate professional business proposals quickly and efficiently with AI",
 }
 

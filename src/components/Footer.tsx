@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-6">
             <div className="text-2xl font-bold text-white">
-              ProposalAI
+              Modi AI
             </div>
             <p className="text-gray-400">
               Create winning business proposals in minutes with the power of AI.
@@ -94,7 +94,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm">
-              © {currentYear} ProposalAI. All rights reserved.
+              © {currentYear} Modi AI. All rights reserved.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-400 hover:text-[#7CFF9B] text-sm">

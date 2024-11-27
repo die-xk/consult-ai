@@ -69,7 +69,7 @@ const Logo = ({ variant = 'default' }: LogoProps) => {
           variant === 'white' ? 'text-white' : 'text-[#1B2B27]'
         }`}
       >
-        Consult<span className="text-[#7CFF9B]">AI</span>
+        Modi<span className="text-[#7CFF9B]">AI</span>
       </span>
     </div>
   )

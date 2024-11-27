@@ -12,14 +12,6 @@ interface ProposalRow extends RowDataPacket {
   created_at: string;
 }
 
-interface Section {
-  title: string;
-  subsections: {
-    title: string;
-    content: string[];
-  }[];
-}
-
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -83,5 +75,35 @@ export async function GET(
   } catch (error) {
     console.error('Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const decoded = decodeJwt(token);
+    
+    await pool.execute(
+      'DELETE FROM proposals WHERE id = ? AND user_id = ?',
+      [id, decoded.sub]
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete proposal' },
+      { status: 500 }
+    );
   }
 } 
