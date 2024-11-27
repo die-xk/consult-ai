@@ -1,149 +1,323 @@
 'use client'
 
 import { useState } from 'react';
-import { IoArrowBack, IoSparklesOutline } from 'react-icons/io5';
+import { IoArrowBack, IoSparklesOutline, IoCheckmarkCircle, IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import Link from 'next/link';
+import clsx from 'clsx';
+import Markdown from 'react-markdown';
+import BasicInfoForm from './components/BasicInfoForm';
+import SowInstructionsForm from './components/SowInstructionsForm';
+import EvaluationCriteriaForm from './components/EvaluationCriteriaForm';
+import QualificationsForm from './components/QualificationsForm';
+import ReviewForm from './components/ReviewForm';
+
+interface FormData {
+  companyName: string;
+  orgName: string;
+  title: string;
+  instructions: string;
+  sow: string;
+  evaluationCriteria: string;
+  qualifications: string;
+}
+
+// Modify the PreviewSection component
+const PreviewSection = ({ stepNumber, content, isGenerating, currentStep }: { 
+  stepNumber: number; 
+  content?: string;
+  isGenerating: boolean;
+  currentStep: number;
+}) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const titles = {
+    1: "Executive Summary & Introduction",
+    2: "Project Details & Approach",
+    3: "Evaluation Criteria Response",
+    4: "Qualifications & Experience"
+  };
+
+  return (
+    <div className="mb-4 border border-[#7CFF9B]/10 rounded-lg overflow-hidden">
+      <div 
+        className="flex items-center justify-between p-4 bg-[#243530] cursor-pointer"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <div className="flex items-center gap-2">
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm
+            ${content ? 'bg-[#7CFF9B] text-[#1B2B27]' : 'bg-[#2B3B37] text-[#7CFF9B]'}`}>
+            {stepNumber}
+          </div>
+          <h3 className="text-white font-medium">
+            {titles[stepNumber as keyof typeof titles]}
+          </h3>
+        </div>
+        {isCollapsed ? <IoChevronDown className="text-[#7CFF9B]" /> : <IoChevronUp className="text-[#7CFF9B]" />}
+      </div>
+      
+      {!isCollapsed && (
+        <div className="p-4 bg-[#1B2B27]">
+          <div className="prose prose-invert max-w-none">
+            {isGenerating && stepNumber === currentStep ? (
+              <div className="flex items-center gap-3 text-[#7CFF9B]">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#7CFF9B]" />
+                Generating section...
+              </div>
+            ) : content ? (
+              <Markdown>{content}</Markdown>
+            ) : (
+              <div className="text-gray-400 italic">
+                This section will be generated in step {stepNumber}...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function PromptProposal() {
-  const [prompt, setPrompt] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [generatedContent, setGeneratedContent] = useState<string>('');
+  const [formData, setFormData] = useState<FormData>({
+    companyName: '',
+    orgName: '',
+    title: '',
+    instructions: '',
+    sow: '',
+    evaluationCriteria: '',
+    qualifications: ''
+  });
+  const [stepPreviews, setStepPreviews] = useState<{ [key: number]: string }>({});
+  const [isGeneratingStep, setIsGeneratingStep] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  const examplePrompts = [
-    {
-      title: "Website Redesign",
-      prompt: "Create a proposal for a website redesign project for a local restaurant. Include modern design, mobile optimization, and online ordering system. Budget range $10,000-$15,000.",
-      icon: "🎨"
-    },
-    {
-      title: "Marketing Campaign",
-      prompt: "Generate a digital marketing proposal for a SaaS startup looking to increase their user base. Focus on SEO, content marketing, and paid advertising. 6-month timeline.",
-      icon: "📈"
-    },
-    {
-      title: "Business Consulting",
-      prompt: "Draft a consulting proposal for a retail business needing help with expansion strategy. Include market analysis, growth planning, and operational optimization. Monthly retainer basis.",
-      icon: "💡"
-    },
-    {
-      title: "Custom Software",
-      prompt: "Create a proposal for developing a custom CRM system for a real estate agency. Include user management, property tracking, and client communication features. 4-month development timeline.",
-      icon: "⚙️"
-    }
+  const steps = [
+    { number: 1, title: 'Basic Info', component: BasicInfoForm },
+    { number: 2, title: 'SOW & Instructions', component: SowInstructionsForm },
+    { number: 3, title: 'Evaluation Criteria', component: EvaluationCriteriaForm },
+    { number: 4, title: 'Qualifications', component: QualificationsForm },
+    { number: 5, title: 'Review & Generate', component: ReviewForm }
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleGenerate = async () => {
     setLoading(true);
-    setError('');
-    
     try {
-      const response = await fetch('/api/generate-proposal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to generate proposal: ${response.statusText}`);
-      }
-
-      const data: { proposal: string; id: string } = await response.json();
-      window.location.href = `/dashboard/proposals/${data.id}`;
+      setGeneratedContent('Generating proposal...');
+      // Add actual API call here
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate proposal. Please try again.');
-      console.error('Error:', err);
+      setError('Failed to generate proposal');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleExampleClick = (promptText: string) => {
-    setPrompt(promptText);
+  const generateStepContent = async (stepNumber: number) => {
+    setIsGeneratingStep(true);
+    try {
+      const response = await fetch('/api/generate-proposal-step', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          step: stepNumber,
+          formData
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate content');
+      }
+
+      const data = await response.json();
+      
+      setStepPreviews(prev => ({
+        ...prev,
+        [stepNumber]: data.content
+      }));
+
+      // Combine all generated content in order
+      const allContent = Object.entries(stepPreviews)
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .map(([_, content]) => content)
+        .join('\n\n---\n\n');
+      
+      setGeneratedContent(allContent);
+
+    } catch (error) {
+      setError('Failed to generate content for this step');
+    } finally {
+      setIsGeneratingStep(false);
+    }
+  };
+
+  const handleNextStep = async () => {
+    if (currentStep === steps.length) {
+      handleGenerate();
+    } else {
+      await generateStepContent(currentStep);
+      setCurrentStep(prev => Math.min(steps.length, prev + 1));
+    }
+  };
+
+  const CurrentStepComponent = steps[currentStep - 1].component;
+
+  // Add height classes for different steps
+  const getStepHeight = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1: // Basic Info
+        return 'min-h-[400px]';
+      case 2: // SOW & Instructions
+        return 'min-h-[700px]';
+      case 3: // Evaluation Criteria
+        return 'min-h-[600px]';
+      case 4: // Qualifications
+        return 'min-h-[500px]';
+      case 5: // Review
+        return 'min-h-[800px]';
+      default:
+        return 'min-h-[400px]';
+    }
   };
 
   return (
-    <div className="py-6 flex flex-col items-center">
-      <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link 
-            href="/dashboard/create/select"
-            className="text-gray-400 hover:text-white transition-colors duration-200"
-          >
-            <IoArrowBack className="w-6 h-6" />
-          </Link>
-          <h1 className="text-3xl font-semibold text-white">Prompt the AI</h1>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#1B2B27] via-[#243530] to-[#1B2B27] p-8">
+      {/* Grid Background */}
+      <div 
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #7CFF9B 1px, transparent 1px),
+            linear-gradient(to bottom, #7CFF9B 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
 
-        {/* Main Content */}
-        <div className="bg-[#1B2B27] rounded-xl shadow-2xl px-6 py-8">
-          {error && (
-            <div className="mb-4 p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-              {error}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-white text-lg font-medium mb-4">
-                Describe your proposal needs
-              </label>
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                rows={6}
-                className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B] transition-colors duration-200"
-                placeholder="Example: Create a web development proposal for an e-commerce site with a budget of $20,000 and a timeline of 3 months..."
-              />
-            </div>
+      {/* Header */}
+      <div className="relative max-w-[1800px] mx-auto mb-8">
+        <Link 
+          href="/dashboard"
+          className="inline-flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+        >
+          <IoArrowBack className="w-6 h-6 mr-2" />
+          <span>Back to Dashboard</span>
+        </Link>
+      </div>
 
-            <button
-              type="submit"
-              disabled={loading || !prompt.trim()}
-              className={`w-full px-6 py-3 rounded-lg bg-[#7CFF9B] text-[#1B2B27] font-medium 
-                ${loading || !prompt.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#6ee889]'} 
-                transition-colors duration-200 flex items-center justify-center gap-2`}
-            >
-              {loading ? (
-                'Generating...'
-              ) : (
-                <>
-                  <IoSparklesOutline className="w-5 h-5" />
-                  Generate Proposal
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Example Prompts */}
-        <div className="mt-8">
-          <h2 className="text-xl font-medium text-white mb-4">Example Prompts</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {examplePrompts.map((example, index) => (
-              <button
-                key={index}
-                onClick={() => handleExampleClick(example.prompt)}
-                className="p-6 bg-[#2B3B37] rounded-xl border border-[#3C4C47] hover:bg-[#344440] transition-all duration-200 text-left group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">{example.icon}</div>
-                  <div>
-                    <h3 className="text-white font-medium group-hover:text-[#7CFF9B] transition-colors duration-200 mb-2">
-                      {example.title}
-                    </h3>
-                    <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
-                      {example.prompt}
-                    </p>
+      {/* Main Content */}
+      <div className="relative max-w-[1800px] mx-auto flex gap-8 h-[calc(100vh-120px)]">
+        {/* Left Side - Form */}
+        <div className="w-1/2 flex flex-col">
+          <div className="flex-1 bg-[#243530]/80 backdrop-blur-sm rounded-2xl shadow-xl 
+            border border-[#7CFF9B]/10 overflow-hidden flex flex-col">
+            {/* Steps Progress - remains fixed at top */}
+            <div className="p-6 border-b border-[#7CFF9B]/10 bg-[#243530]/80">
+              <div className="flex justify-between">
+                {steps.map((step) => (
+                  <div key={step.number} className="flex flex-col items-center">
+                    <div className={clsx(
+                      'w-10 h-10 rounded-full flex items-center justify-center mb-2',
+                      currentStep > step.number ? 'bg-[#7CFF9B] text-[#1B2B27]' :
+                      currentStep === step.number ? 'bg-[#2B3B37] text-[#7CFF9B] border-2 border-[#7CFF9B]' :
+                      'bg-[#2B3B37] text-gray-400'
+                    )}>
+                      {currentStep > step.number ? <IoCheckmarkCircle className="w-6 h-6" /> : step.number}
+                    </div>
+                    <span className={clsx(
+                      'text-sm',
+                      currentStep === step.number ? 'text-[#7CFF9B]' : 'text-gray-400'
+                    )}>
+                      {step.title}
+                    </span>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Form Content - Make scrollable */}
+            <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
+              {error && (
+                <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
+                  {error}
                 </div>
-              </button>
-            ))}
+              )}
+              
+              <div className="space-y-6">
+                <CurrentStepComponent
+                  formData={formData}
+                  handleInputChange={handleInputChange as (field: string, value: string) => void}
+                />
+              </div>
+            </div>
+
+            {/* Navigation Buttons - Fixed at bottom */}
+            <div className="p-6 border-t border-[#7CFF9B]/10 bg-[#243530]/80">
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
+                  className={clsx(
+                    'px-6 py-3 rounded-lg text-white border border-[#3C4C47] hover:bg-[#2B3B37] transition-colors duration-200',
+                    currentStep === 1 && 'opacity-50 cursor-not-allowed'
+                  )}
+                  disabled={currentStep === 1}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleNextStep}
+                  className="px-6 py-3 rounded-lg bg-[#7CFF9B] text-[#1B2B27] font-medium hover:bg-[#6ee889] transition-colors duration-200"
+                >
+                  {isGeneratingStep ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#1B2B27]" />
+                      Generating...
+                    </span>
+                  ) : currentStep === steps.length ? (
+                    <span className="flex items-center gap-2">
+                      <IoSparklesOutline className="w-5 h-5" />
+                      Generate Proposal
+                    </span>
+                  ) : (
+                    'Next'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Preview */}
+        <div className="w-1/2 flex flex-col">
+          <div className="flex-1 bg-[#1B2B27]/80 backdrop-blur-sm rounded-2xl shadow-xl 
+            border border-[#7CFF9B]/10 overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#7CFF9B]/10 bg-[#1B2B27]/80">
+              <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <IoSparklesOutline className="w-5 h-5 text-[#7CFF9B]" />
+                Proposal Preview
+              </h2>
+            </div>
+            <div className="p-4 flex-1 overflow-y-auto custom-scrollbar">
+              {[1, 2, 3, 4].map((stepNum) => (
+                <PreviewSection
+                  key={stepNum}
+                  stepNumber={stepNum}
+                  content={stepPreviews[stepNum]}
+                  isGenerating={isGeneratingStep && currentStep === stepNum}
+                  currentStep={currentStep}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}
