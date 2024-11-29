@@ -1,84 +1,84 @@
 import React from 'react';
 
-interface BasicInfoFormProps {
+interface ProjectDetailsFormProps {
   formData: {
-    businessName: string;
-    industrySector: string;
-    yearsInOperation: string;
-    companyMission: string;
-    annualRevenue: string;
+    projectName: string;
+    primaryObjectives: string;
+    valueProposition: string;
+    targetClient: string;
+    projectDuration: string;
   };
   handleInputChange: (field: string, value: string) => void;
 }
 
-const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ formData, handleInputChange }) => {
+const ProjectDetailsForm: React.FC<ProjectDetailsFormProps> = ({ formData, handleInputChange }) => {
   return (
     <>
-      <h2 className="text-xl font-semibold text-white mb-4">Step 1: Company Overview</h2>
+      <h2 className="text-xl font-semibold text-white mb-4">Step 2: Project/Service Details</h2>
       
       <div className="space-y-4">
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Business Name
+            Specific Project/Service Name
           </label>
           <input
             type="text"
-            value={formData.businessName}
-            onChange={(e) => handleInputChange('businessName', e.target.value)}
+            value={formData.projectName}
+            onChange={(e) => handleInputChange('projectName', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="Enter your business name"
+            placeholder="Enter the name of your project or service"
           />
         </div>
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Industry Sector
-          </label>
-          <input
-            type="text"
-            value={formData.industrySector}
-            onChange={(e) => handleInputChange('industrySector', e.target.value)}
-            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="e.g., Technology, Healthcare, Manufacturing"
-          />
-        </div>
-
-        <div>
-          <label className="block text-white text-sm font-medium mb-2">
-            Years in Operation
-          </label>
-          <input
-            type="text"
-            value={formData.yearsInOperation}
-            onChange={(e) => handleInputChange('yearsInOperation', e.target.value)}
-            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="e.g., 5"
-          />
-        </div>
-
-        <div>
-          <label className="block text-white text-sm font-medium mb-2">
-            Company Mission
+            Primary Objectives
           </label>
           <textarea
-            value={formData.companyMission}
-            onChange={(e) => handleInputChange('companyMission', e.target.value)}
+            value={formData.primaryObjectives}
+            onChange={(e) => handleInputChange('primaryObjectives', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="Enter your company's mission statement"
+            placeholder="Describe the main goals and objectives of this project/service"
             rows={3}
           />
         </div>
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Current Annual Revenue
+            Unique Value Proposition
+          </label>
+          <textarea
+            value={formData.valueProposition}
+            onChange={(e) => handleInputChange('valueProposition', e.target.value)}
+            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
+            placeholder="What makes your solution unique and valuable?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-white text-sm font-medium mb-2">
+            Target Client Profile
+          </label>
+          <textarea
+            value={formData.targetClient}
+            onChange={(e) => handleInputChange('targetClient', e.target.value)}
+            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
+            placeholder="Describe your ideal client for this project/service"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-white text-sm font-medium mb-2">
+            Estimated Project Duration
           </label>
           <input
             type="text"
-            value={formData.annualRevenue}
-            onChange={(e) => handleInputChange('annualRevenue', e.target.value)}
+            value={formData.projectDuration}
+            onChange={(e) => handleInputChange('projectDuration', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="e.g., $1,000,000"
+            placeholder="e.g., 6 months, 1 year"
           />
         </div>
       </div>
@@ -86,4 +86,4 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ formData, handleInputChan
   );
 };
 
-export default BasicInfoForm; 
+export default ProjectDetailsForm; 

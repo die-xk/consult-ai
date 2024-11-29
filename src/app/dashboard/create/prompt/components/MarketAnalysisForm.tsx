@@ -1,84 +1,84 @@
 import React from 'react';
 
-interface BasicInfoFormProps {
+interface MarketAnalysisFormProps {
   formData: {
-    businessName: string;
-    industrySector: string;
-    yearsInOperation: string;
-    companyMission: string;
-    annualRevenue: string;
+    marketSize: string;
+    growthRate: string;
+    competitors: string;
+    competitiveAdvantages: string;
+    pricingStrategy: string;
   };
   handleInputChange: (field: string, value: string) => void;
 }
 
-const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ formData, handleInputChange }) => {
+const MarketAnalysisForm: React.FC<MarketAnalysisFormProps> = ({ formData, handleInputChange }) => {
   return (
     <>
-      <h2 className="text-xl font-semibold text-white mb-4">Step 1: Company Overview</h2>
+      <h2 className="text-xl font-semibold text-white mb-4">Step 3: Market Analysis</h2>
       
       <div className="space-y-4">
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Business Name
+            What is the estimated size of your target market?
           </label>
           <input
             type="text"
-            value={formData.businessName}
-            onChange={(e) => handleInputChange('businessName', e.target.value)}
+            value={formData.marketSize}
+            onChange={(e) => handleInputChange('marketSize', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="Enter your business name"
+            placeholder="e.g., $50 billion globally"
           />
         </div>
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Industry Sector
+            What is the current growth rate of this market?
           </label>
           <input
             type="text"
-            value={formData.industrySector}
-            onChange={(e) => handleInputChange('industrySector', e.target.value)}
+            value={formData.growthRate}
+            onChange={(e) => handleInputChange('growthRate', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="e.g., Technology, Healthcare, Manufacturing"
+            placeholder="e.g., 12% annually"
           />
         </div>
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Years in Operation
-          </label>
-          <input
-            type="text"
-            value={formData.yearsInOperation}
-            onChange={(e) => handleInputChange('yearsInOperation', e.target.value)}
-            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="e.g., 5"
-          />
-        </div>
-
-        <div>
-          <label className="block text-white text-sm font-medium mb-2">
-            Company Mission
+            Who are your top 3 direct competitors?
           </label>
           <textarea
-            value={formData.companyMission}
-            onChange={(e) => handleInputChange('companyMission', e.target.value)}
+            value={formData.competitors}
+            onChange={(e) => handleInputChange('competitors', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="Enter your company's mission statement"
+            placeholder="List your main competitors and their key strengths"
             rows={3}
           />
         </div>
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Current Annual Revenue
+            What are your key competitive advantages?
           </label>
-          <input
-            type="text"
-            value={formData.annualRevenue}
-            onChange={(e) => handleInputChange('annualRevenue', e.target.value)}
+          <textarea
+            value={formData.competitiveAdvantages}
+            onChange={(e) => handleInputChange('competitiveAdvantages', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
-            placeholder="e.g., $1,000,000"
+            placeholder="Describe what sets you apart from competitors"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-white text-sm font-medium mb-2">
+            What is your proposed pricing strategy?
+          </label>
+          <textarea
+            value={formData.pricingStrategy}
+            onChange={(e) => handleInputChange('pricingStrategy', e.target.value)}
+            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
+            placeholder="Describe your pricing approach and rationale"
+            rows={3}
           />
         </div>
       </div>
@@ -86,4 +86,4 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ formData, handleInputChan
   );
 };
 
-export default BasicInfoForm; 
+export default MarketAnalysisForm; 

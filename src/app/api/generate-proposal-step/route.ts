@@ -6,12 +6,8 @@ const openai = new OpenAI({
 });
 
 const STEP_PROMPTS = {
-  1: `You are writing the Executive Summary and About Us sections of a business proposal. Create a compelling introduction that includes:
-- A brief, engaging overview of the proposed solution
-- Why we're the right choice for this project
-- Key benefits and expected outcomes
-
-Use the following information:`,
+  1: `You are an expert business proposal writer crafting an executive summary and company overview. Focus on creating a compelling narrative that highlights the unique value and potential of the business.
+  Use the following information:`,
 
   2: `You are writing the Project Details section of a business proposal. Based on the provided Statement of Work and Instructions, create a detailed breakdown that includes:
 - Clear understanding of requirements

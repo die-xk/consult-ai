@@ -6,10 +6,10 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import Markdown from 'react-markdown';
 import BasicInfoForm from './components/BasicInfoForm';
-import SowInstructionsForm from './components/SowInstructionsForm';
-import EvaluationCriteriaForm from './components/EvaluationCriteriaForm';
+import MarketAnalysisForm from './components/MarketAnalysisForm';
 import QualificationsForm from './components/QualificationsForm';
 import ReviewForm from './components/ReviewForm';
+import ProjectDetailsForm from './components/ProjectDetailsForm';
 
 interface FormData {
   companyName: string;
@@ -32,7 +32,7 @@ const PreviewSection = ({ stepNumber, content, isGenerating, currentStep }: {
   const titles = {
     1: "Executive Summary & Introduction",
     2: "Project Details & Approach",
-    3: "Evaluation Criteria Response",
+    3: "Market Analysis",
     4: "Qualifications & Experience"
   };
 
@@ -219,8 +219,8 @@ export default function PromptProposal() {
 
   const steps = [
     { number: 1, title: 'Basic Info', component: BasicInfoForm },
-    { number: 2, title: 'SOW & Instructions', component: SowInstructionsForm },
-    { number: 3, title: 'Evaluation Criteria', component: EvaluationCriteriaForm },
+    { number: 2, title: 'Project/Service Details', component: ProjectDetailsForm },
+    { number: 3, title: 'Market Analysis', component: MarketAnalysisForm },
     { number: 4, title: 'Qualifications', component: QualificationsForm },
     { number: 5, title: 'Review & Generate', component: ReviewForm }
   ];
@@ -378,7 +378,7 @@ export default function PromptProposal() {
               
               <div className="space-y-6">
                 <CurrentStepComponent
-                  formData={formData}
+                  formData={formData as any}
                   handleInputChange={handleInputChange as (field: string, value: string) => void}
                 />
               </div>
