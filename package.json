@@ -10,6 +10,7 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@next/bundle-analyzer": "latest",
     "clsx": "^2.1.1",
     "firebase": "^11.0.2",

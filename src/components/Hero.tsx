@@ -45,11 +45,11 @@ const Hero = () => {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
-                  href="/early-access"
+                  href="/signup"
                   className="bg-[#7CFF9B] text-[#1B2B27] px-6 py-4 rounded-md font-medium hover:bg-[#6ee889] text-center"
                 >
-                  Get Early Access - $49/mo
-                  <span className="block text-sm font-normal">(Limited to First 10 Users)</span>
+                  Get Started - $49/mo
+                  <span className="block text-sm font-normal">(Limited Time Offer)</span>
                 </Link>
                 
                 <Link 
