@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { IoArrowBack, IoSparklesOutline, IoCheckmarkCircle, IoChevronDown, IoChevronUp } from 'react-icons/io5';
+import { IoArrowBack, IoSparklesOutline, IoCheckmarkCircle, IoChevronDown, IoChevronUp, IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import clsx from 'clsx';
 import Markdown from 'react-markdown';
@@ -36,6 +36,128 @@ const PreviewSection = ({ stepNumber, content, isGenerating, currentStep }: {
     4: "Qualifications & Experience"
   };
 
+  const renderContent = (content: string) => {
+    try {
+      const jsonContent = JSON.parse(content);
+      
+      switch (stepNumber) {
+        case 1:
+          return (
+            <>
+              <h3 className="text-xl font-bold mb-4">Executive Summary</h3>
+              <p className="mb-4">{jsonContent.executiveSummary.overview}</p>
+              <p className="mb-4">{jsonContent.executiveSummary.valueProposition}</p>
+              <h4 className="font-bold mb-2">Key Benefits</h4>
+              <ul className="list-disc pl-5 mb-6">
+                {jsonContent.executiveSummary.keyBenefits.map((benefit: string, index: number) => (
+                  <li key={index}>{benefit}</li>
+                ))}
+              </ul>
+
+              <h3 className="text-xl font-bold mb-4">About Us</h3>
+              <p className="mb-4">{jsonContent.aboutUs.companyIntroduction}</p>
+              <h4 className="font-bold mb-2">Why Choose Us</h4>
+              <ul className="list-disc pl-5 mb-4">
+                {jsonContent.aboutUs.whyChooseUs.map((reason: string, index: number) => (
+                  <li key={index}>{reason}</li>
+                ))}
+              </ul>
+            </>
+          );
+
+        case 2:
+          return (
+            <>
+              <h3 className="text-xl font-bold mb-4">Project Understanding</h3>
+              <p className="mb-6">{jsonContent.projectDetails.understanding}</p>
+
+              <h3 className="text-xl font-bold mb-4">Methodology</h3>
+              <p className="mb-4">{jsonContent.projectDetails.methodology.approach}</p>
+              
+              <h4 className="font-bold mb-2">Project Phases</h4>
+              <div className="space-y-4 mb-6">
+                {jsonContent.projectDetails.methodology.phases.map((phase: any, index: number) => (
+                  <div key={index} className="border border-[#7CFF9B]/10 rounded p-4">
+                    <h5 className="font-bold text-[#7CFF9B]">{phase.name}</h5>
+                    <p>{phase.description}</p>
+                    <p className="text-sm text-gray-400 mt-2">Duration: {phase.duration}</p>
+                  </div>
+                ))}
+              </div>
+
+              <h4 className="font-bold mb-2">Deliverables</h4>
+              <div className="space-y-4 mb-6">
+                {jsonContent.projectDetails.deliverables.map((deliverable: any, index: number) => (
+                  <div key={index} className="border border-[#7CFF9B]/10 rounded p-4">
+                    <h5 className="font-bold text-[#7CFF9B]">{deliverable.name}</h5>
+                    <p>{deliverable.description}</p>
+                    <p className="text-sm text-gray-400 mt-2">Timeline: {deliverable.timeline}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          );
+
+        case 3:
+          return (
+            <>
+              <h3 className="text-xl font-bold mb-4">Evaluation Criteria Response</h3>
+              {jsonContent.evaluationResponse.criteria.map((criterion: any, index: number) => (
+                <div key={index} className="mb-6 border border-[#7CFF9B]/10 rounded p-4">
+                  <h4 className="font-bold text-[#7CFF9B] mb-2">{criterion.criterion}</h4>
+                  <p className="mb-3">{criterion.response}</p>
+                  <div className="bg-[#243530] p-3 rounded">
+                    <h5 className="font-bold mb-2">Supporting Evidence:</h5>
+                    <ul className="list-disc pl-5">
+                      {criterion.evidence.map((item: string, i: number) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </>
+          );
+
+        case 4:
+          return (
+            <>
+              <h3 className="text-xl font-bold mb-4">Qualifications & Experience</h3>
+              <div className="mb-6">
+                <h4 className="font-bold text-[#7CFF9B] mb-2">Expertise</h4>
+                <p className="mb-3">{jsonContent.qualifications.expertise.summary}</p>
+                <div className="flex flex-wrap gap-2">
+                  {jsonContent.qualifications.expertise.specializations.map((spec: string, index: number) => (
+                    <span key={index} className="bg-[#243530] px-3 py-1 rounded-full text-sm">
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <h4 className="font-bold text-[#7CFF9B] mb-4">Key Team Members</h4>
+              <div className="grid gap-4 mb-6">
+                {jsonContent.qualifications.teamMembers.map((member: any, index: number) => (
+                  <div key={index} className="border border-[#7CFF9B]/10 rounded p-4">
+                    <h5 className="font-bold">{member.name}</h5>
+                    <p className="text-sm text-[#7CFF9B]">{member.role}</p>
+                    <p className="mt-2">{member.expertise}</p>
+                    <p className="text-sm text-gray-400 mt-2">{member.relevantExperience}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          );
+
+        default:
+          return <pre className="whitespace-pre-wrap">{content}</pre>;
+      }
+    } catch (error) {
+      // Fallback to displaying raw content if JSON parsing fails
+      return <pre className="whitespace-pre-wrap">{content}</pre>;
+    }
+  };
+
   return (
     <div className="mb-4 border border-[#7CFF9B]/10 rounded-lg overflow-hidden">
       <div 
@@ -63,7 +185,7 @@ const PreviewSection = ({ stepNumber, content, isGenerating, currentStep }: {
                 Generating section...
               </div>
             ) : content ? (
-              <Markdown>{content}</Markdown>
+              renderContent(content)
             ) : (
               <div className="text-gray-400 italic">
                 This section will be generated in step {stepNumber}...
@@ -93,6 +215,7 @@ export default function PromptProposal() {
   const [stepPreviews, setStepPreviews] = useState<{ [key: number]: string }>({});
   const [isGeneratingStep, setIsGeneratingStep] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(true);
 
   const steps = [
     { number: 1, title: 'Basic Info', component: BasicInfoForm },
@@ -188,7 +311,7 @@ export default function PromptProposal() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1B2B27] via-[#243530] to-[#1B2B27] p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#1B2B27] via-[#243530] to-[#1B2B27] p-4 sm:p-8">
       {/* Grid Background */}
       <div 
         className="absolute inset-0 opacity-20"
@@ -202,37 +325,40 @@ export default function PromptProposal() {
       />
 
       {/* Header */}
-      <div className="relative max-w-[1800px] mx-auto mb-8">
+      <div className="relative max-w-[1800px] mx-auto mb-4 sm:mb-8">
         <Link 
           href="/dashboard"
           className="inline-flex items-center text-gray-400 hover:text-white transition-colors duration-200"
         >
-          <IoArrowBack className="w-6 h-6 mr-2" />
+          <IoArrowBack className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
           <span>Back to Dashboard</span>
         </Link>
       </div>
 
       {/* Main Content */}
-      <div className="relative max-w-[1800px] mx-auto flex gap-8 h-[calc(100vh-120px)]">
+      <div className="relative max-w-[1800px] mx-auto flex flex-col lg:flex-row gap-4 lg:gap-8 min-h-[calc(100vh-120px)]">
         {/* Left Side - Form */}
-        <div className="w-1/2 flex flex-col">
+        <div className="w-full lg:w-1/2 flex flex-col">
           <div className="flex-1 bg-[#243530]/80 backdrop-blur-sm rounded-2xl shadow-xl 
             border border-[#7CFF9B]/10 overflow-hidden flex flex-col">
             {/* Steps Progress - remains fixed at top */}
-            <div className="p-6 border-b border-[#7CFF9B]/10 bg-[#243530]/80">
+            <div className="p-4 sm:p-6 border-b border-[#7CFF9B]/10 bg-[#243530]/80">
               <div className="flex justify-between">
                 {steps.map((step) => (
                   <div key={step.number} className="flex flex-col items-center">
                     <div className={clsx(
-                      'w-10 h-10 rounded-full flex items-center justify-center mb-2',
+                      'w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mb-1 sm:mb-2',
                       currentStep > step.number ? 'bg-[#7CFF9B] text-[#1B2B27]' :
                       currentStep === step.number ? 'bg-[#2B3B37] text-[#7CFF9B] border-2 border-[#7CFF9B]' :
                       'bg-[#2B3B37] text-gray-400'
                     )}>
-                      {currentStep > step.number ? <IoCheckmarkCircle className="w-6 h-6" /> : step.number}
+                      {currentStep > step.number ? 
+                        <IoCheckmarkCircle className="w-5 h-5 sm:w-6 sm:h-6" /> : 
+                        <span className="text-sm sm:text-base">{step.number}</span>
+                      }
                     </div>
                     <span className={clsx(
-                      'text-sm',
+                      'text-xs sm:text-sm hidden sm:block',
                       currentStep === step.number ? 'text-[#7CFF9B]' : 'text-gray-400'
                     )}>
                       {step.title}
@@ -294,11 +420,25 @@ export default function PromptProposal() {
           </div>
         </div>
 
-        {/* Right Side - Preview */}
-        <div className="w-1/2 flex flex-col">
+        {/* Mobile Preview Toggle Button */}
+        <button
+          onClick={() => setIsPreviewVisible(!isPreviewVisible)}
+          className="lg:hidden fixed bottom-4 right-4 z-10 bg-[#243530] text-[#7CFF9B] p-3 rounded-full shadow-lg border border-[#7CFF9B]/20"
+        >
+          {isPreviewVisible ? 
+            <IoEyeOffOutline className="w-6 h-6" /> : 
+            <IoEyeOutline className="w-6 h-6" />
+          }
+        </button>
+
+        {/* Preview Section with visibility toggle */}
+        <div className={clsx(
+          "w-full lg:w-1/2 flex flex-col",
+          !isPreviewVisible && "hidden lg:flex"
+        )}>
           <div className="flex-1 bg-[#1B2B27]/80 backdrop-blur-sm rounded-2xl shadow-xl 
             border border-[#7CFF9B]/10 overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-[#7CFF9B]/10 bg-[#1B2B27]/80">
+            <div className="p-4 sm:p-6 border-b border-[#7CFF9B]/10 bg-[#1B2B27]/80">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 <IoSparklesOutline className="w-5 h-5 text-[#7CFF9B]" />
                 Proposal Preview

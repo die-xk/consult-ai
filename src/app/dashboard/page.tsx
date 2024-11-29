@@ -85,7 +85,7 @@ export default function Dashboard() {
       <div className="relative py-12">
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-white mb-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4">
               Welcome back, {user?.displayName || user?.email}!
             </h1>
             <p className="text-gray-300 text-lg">

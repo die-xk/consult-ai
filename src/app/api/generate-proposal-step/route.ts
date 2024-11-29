@@ -38,6 +38,105 @@ Use the following information:`,
 Use the following information:`
 };
 
+function getExpectedSchema(step: number) {
+  switch (step) {
+    case 1:
+      return {
+        executiveSummary: {
+          overview: "string",
+          valueProposition: "string",
+          keyBenefits: ["string"]
+        },
+        aboutUs: {
+          companyIntroduction: "string",
+          whyChooseUs: ["string"],
+          expectedOutcomes: ["string"]
+        }
+      };
+    case 2:
+      return {
+        projectDetails: {
+          understanding: "string",
+          methodology: {
+            approach: "string",
+            phases: [
+              {
+                name: "string",
+                description: "string",
+                duration: "string"
+              }
+            ]
+          },
+          deliverables: [
+            {
+              name: "string",
+              description: "string",
+              timeline: "string"
+            }
+          ],
+          technicalSpecs: {
+            technologies: ["string"],
+            requirements: ["string"],
+            standards: ["string"]
+          }
+        }
+      };
+    // Add cases for steps 3 and 4 as needed
+    case 3:  
+      return {
+        "evaluationResponse": {
+    "criteria": [
+      {
+        "criterion": "string",
+        "response": "string",
+        "evidence": ["string"],
+        "metrics": {
+          "description": "string",
+                value: "string"
+              }
+            }
+          ],
+          competitiveAdvantages: ["string"],
+          successMetrics: [
+            {
+              metric: "string",
+              value: "string",
+              context: "string"
+            }
+          ]
+        }
+      };
+    case 4:
+      return {
+        "qualifications": {
+    "expertise": {
+      "summary": "string",
+      "specializations": ["string"]
+    },
+    "teamMembers": [
+      {
+        "name": "string",
+        "role": "string",
+        "expertise": "string",
+        "relevantExperience": "string"
+      }
+    ],
+    "similarProjects": [
+      {
+        "name": "string",
+        "description": "string",
+        "outcomes": ["string"],
+        "relevance": "string"
+            }
+          ],
+          uniqueValueProps: ["string"]
+        }
+      };
+    default:
+      return {};
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const { step, formData } = await req.json();
@@ -52,7 +151,9 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: "You are an expert business proposal writer. Output in markdown format."
+          content: `You are an expert business proposal writer. 
+          Output in a strict JSON format following this structure for step ${step}: 
+          ${JSON.stringify(getExpectedSchema(step), null, 2)}`
         },
         {
           role: "user",
@@ -60,6 +161,7 @@ export async function POST(req: Request) {
         }
       ],
       temperature: 0.7,
+      response_format: { type: "json_object" }
     });
 
     return NextResponse.json({ 

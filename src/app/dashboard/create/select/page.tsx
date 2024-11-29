@@ -33,21 +33,21 @@ export default function SelectCreationMethod() {
   ];
 
   return (
-    <div className="py-6 flex flex-col items-center">
-      <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+    <div className="py-6 px-4 flex flex-col items-center min-h-screen">
+      <div className="w-full max-w-6xl">
+        {/* Header - Make it more compact on mobile */}
+        <div className="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-8">
           <Link 
             href="/dashboard"
             className="text-gray-400 hover:text-white transition-colors duration-200"
           >
-            <IoArrowBack className="w-6 h-6" />
+            <IoArrowBack className="w-5 h-5 sm:w-6 sm:h-6" />
           </Link>
-          <h1 className="text-3xl font-semibold text-white">Create New Proposal</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-white">Create New Proposal</h1>
         </div>
 
-        {/* Selection Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Selection Grid - Already responsive with grid-cols-1 md:grid-cols-3 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {methods.map((method, index) => (
             <div key={index} className={method.disabled ? 'cursor-not-allowed' : ''}>
               <Link
@@ -97,9 +97,9 @@ export default function SelectCreationMethod() {
           ))}
         </div>
 
-        {/* Help Text */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-400">
+        {/* Help Text - Add padding for mobile */}
+        <div className="mt-8 sm:mt-12 text-center px-4">
+          <p className="text-sm sm:text-base text-gray-400">
             Not sure which to choose? Start with a template - you can always customize it later.
           </p>
         </div>
