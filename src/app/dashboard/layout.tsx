@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import DashboardNavbar from '@/components/DashboardNavbar';
+import DashboardSidebar from '@/components/DashboardNavbar';
 
 export const metadata: Metadata = {
   title: 'Dashboard | ConsultAI',
@@ -12,9 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="dashboard-container">
-      <DashboardNavbar />
-      <main>
+    <div className="flex min-h-screen bg-[#1B2B27]">
+      <DashboardSidebar />
+      <main className="flex-1 ml-64">
         {children}
       </main>
     </div>

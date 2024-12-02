@@ -7,6 +7,9 @@ interface BasicInfoFormProps {
     yearsInOperation: string;
     companyMission: string;
     annualRevenue: string;
+    keyDifferentiators: string;
+    targetMarket: string;
+    successMetrics: string;
   };
   handleInputChange: (field: string, value: string) => void;
 }
@@ -79,6 +82,32 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ formData, handleInputChan
             onChange={(e) => handleInputChange('annualRevenue', e.target.value)}
             className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
             placeholder="e.g., $1,000,000"
+          />
+        </div>
+
+        <div>
+          <label className="block text-white text-sm font-medium mb-2">
+            What Makes Your Company Unique?
+          </label>
+          <textarea
+            value={formData.keyDifferentiators}
+            onChange={(e) => handleInputChange('keyDifferentiators', e.target.value)}
+            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
+            placeholder="List 2-3 key factors that set your company apart from competitors"
+            rows={2}
+          />
+        </div>
+
+        <div>
+          <label className="block text-white text-sm font-medium mb-2">
+            Target Market/Ideal Client
+          </label>
+          <input
+            type="text"
+            value={formData.targetMarket}
+            onChange={(e) => handleInputChange('targetMarket', e.target.value)}
+            className="w-full px-4 py-3 bg-[#2B3B37] border border-[#3C4C47] rounded-lg text-white focus:outline-none focus:border-[#7CFF9B]"
+            placeholder="e.g., Enterprise SaaS companies, Healthcare providers"
           />
         </div>
       </div>

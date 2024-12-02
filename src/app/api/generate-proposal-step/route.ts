@@ -5,48 +5,35 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+
 const STEP_PROMPTS = {
-  1: `You are an expert business proposal writer crafting an executive summary and company overview. Focus on creating a compelling narrative that highlights the unique value and potential of the business.
-  Use the following information:`,
+  1: (formData: any) => `Based on the company information provided, create an executive summary that:
+- Opens with a powerful introduction of the company
+- Highlights the company's experience (${formData.yearsInOperation} years) and industry expertise
+- Incorporates the company's mission into the value proposition
+- Presents the company's current success ($${formData.annualRevenue} annual revenue) professionally
+- Identifies 3-4 key benefits of working with the company
 
-  2: `You are writing the Project Details section of a business proposal. Based on the provided Statement of Work and Instructions, create a detailed breakdown that includes:
-- Clear understanding of requirements
-- Proposed methodology and approach
-- Specific deliverables and milestones
-- Technical specifications where relevant
-
-Use the following information:`,
-
-  3: `You are writing the Evaluation Response section of a business proposal. Create a point-by-point response that:
-- Directly addresses each evaluation criterion
-- Provides specific evidence of our qualifications
-- Highlights our competitive advantages
-- Includes relevant metrics and past successes
-
-Use the following information:`,
-
-  4: `You are writing the Qualifications section of a business proposal. Create a compelling narrative that:
-- Showcases relevant experience and expertise
-- Highlights key team members and capabilities
-- Includes specific examples of similar projects
-- Emphasizes unique value propositions
-
-Use the following information:`
+Keep the tone professional yet engaging, and ensure all numerical data is contextualized effectively.`,
+  2: "Create a detailed project breakdown including methodology, deliverables, and technical specifications based on the provided requirements.",
+  3: "Develop a response addressing each evaluation criterion with specific evidence and metrics that demonstrate our qualifications.",
+  4: "Craft a qualifications section that showcases our team's expertise, similar projects, and unique value propositions."
 };
 
 function getExpectedSchema(step: number) {
   switch (step) {
     case 1:
+      case 1:
       return {
         executiveSummary: {
-          overview: "string",
-          valueProposition: "string",
-          keyBenefits: ["string"]
+          overview: "string", // Company introduction and market position
+          valueProposition: "string", // Unique value and mission-aligned benefits
+          keyBenefits: ["string"] // 3-4 compelling reasons to choose this company
         },
         aboutUs: {
-          companyIntroduction: "string",
-          whyChooseUs: ["string"],
-          expectedOutcomes: ["string"]
+          companyIntroduction: "string", // Detailed company background
+          whyChooseUs: ["string"], // Specific differentiators
+          expectedOutcomes: ["string"] // What clients can expect
         }
       };
     case 2:

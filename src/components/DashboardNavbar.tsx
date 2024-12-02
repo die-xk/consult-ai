@@ -1,20 +1,44 @@
 'use client'
 
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import Logo from './Logo';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
+import { 
+  IoGridOutline, 
+  IoDocumentTextOutline,
+  IoAddCircleOutline,
+  IoPencilOutline,
+  IoStatsChartOutline,
+  IoExtensionPuzzleOutline,
+  IoHelpCircleOutline,
+  IoSettingsOutline,
+  IoStarOutline
+} from 'react-icons/io5';
 
-const DashboardNavbar = () => {
+const DashboardSidebar = () => {
   const { user, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const navigationItems = [
+    { icon: <IoGridOutline />, label: 'Dashboard Overview', href: '/dashboard' },
+    { icon: <IoDocumentTextOutline />, label: 'My Proposals', href: '/dashboard/proposals' },
+    { icon: <IoAddCircleOutline />, label: 'Create Proposal', href: '/dashboard/create/select' },
+    { icon: <IoPencilOutline />, label: 'Proposal Editor', href: '/dashboard/editor' },
+    { icon: <IoStatsChartOutline />, label: 'Scorecard', href: '/dashboard/scorecard' },
+    { icon: <IoExtensionPuzzleOutline />, label: 'Integrations', href: '/dashboard/integrations' },
+    { icon: <IoHelpCircleOutline />, label: 'Help & Tutorials', href: '/dashboard/help' },
+    { icon: <IoSettingsOutline />, label: 'Account Settings', href: '/dashboard/settings' },
+  ];
 
   const handleSignOut = async () => {
     try {
       await logout()
       setShowModal(false)
-      setIsMobileMenuOpen(false)
+      router.push('/')
     } catch (error) {
       console.error('Error signing out:', error)
     }
@@ -22,117 +46,70 @@ const DashboardNavbar = () => {
 
   return (
     <>
-      <nav className="bg-[#1B2B27]/80 backdrop-blur-sm border-b border-[#7CFF9B]/10 py-4 w-full z-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between">
-            {/* Left side - Logo and Navigation */}
-            <div className="flex items-center">
-              <Link href="/dashboard">
-                <Logo variant="white" />
-              </Link>
+      <aside className="fixed left-0 top-0 h-screen w-64 bg-[#1B2B27] border-r border-[#7CFF9B]/10 flex flex-col">
+        {/* Logo */}
+        <div className="p-6 border-b border-[#7CFF9B]/10">
+          <Link href="/dashboard">
+            <Logo variant="white" />
+          </Link>
+        </div>
+
+        {/* Navigation Items */}
+        <nav className="flex-1 overflow-y-auto py-6">
+          <div className="space-y-2 px-4">
+            {navigationItems.map((item) => {
+              const isActive = pathname === item.href || 
+                             (item.href !== '/dashboard' && pathname.startsWith(item.href));
               
-              <div className="hidden md:flex items-center ml-10 space-x-8">
-                <Link href="/dashboard" className="text-gray-300 hover:text-white text-sm">
-                  Overview
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive 
+                      ? 'bg-[#2B3B37] text-[#7CFF9B]' 
+                      : 'text-gray-300 hover:text-white hover:bg-[#2B3B37]'
+                  }`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-sm">{item.label}</span>
                 </Link>
-                <Link href="/dashboard/proposals" className="text-gray-300 hover:text-white text-sm">
-                  Proposals
-                </Link>
-                <Link href="/dashboard/templates" className="text-gray-300 hover:text-white text-sm">
-                  Templates
-                </Link>
-                <Link href="/dashboard/analytics" className="text-gray-300 hover:text-white text-sm">
-                  Analytics
-                </Link>
-              </div>
-            </div>
+              );
+            })}
+          </div>
+        </nav>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-gray-300 hover:text-white"
+        {/* User Profile & CTA */}
+        <div className="p-4 border-t border-[#7CFF9B]/10 space-y-4">
+          {/* Upgrade/Refer CTA */}
+          <button className="w-full bg-[#7CFF9B] text-[#1B2B27] px-4 py-2 rounded-lg hover:bg-[#6ee889] transition-colors flex items-center justify-center space-x-2">
+            <IoStarOutline className="text-xl" />
+            <span className="font-medium">Upgrade Plan</span>
+          </button>
+
+          {/* User Profile */}
+          <div className="flex items-center space-x-3 px-2">
+            <div className="w-8 h-8 rounded-full bg-[#7CFF9B] flex items-center justify-center">
+              <span className="text-[#1B2B27] font-medium">
+                {user?.displayName?.charAt(0) || user?.email?.charAt(0)}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-white truncate">
+                {user?.displayName || user?.email}
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowModal(true)}
+              className="text-gray-400 hover:text-white"
             >
-              <div className="w-8 h-8 rounded-full bg-[#7CFF9B] flex items-center justify-center">
-                <span className="text-[#1B2B27] font-medium">
-                  {user?.displayName?.charAt(0) || user?.email?.charAt(0)}
-                </span>
-              </div>
+              <IoSettingsOutline className="text-xl" />
             </button>
-
-            {/* Desktop Profile Link */}
-            <Link
-              href="/dashboard/settings"
-              className="hidden md:flex items-center space-x-3 text-white hover:opacity-80 transition-opacity"
-            >
-              <div className="w-8 h-8 rounded-full bg-[#7CFF9B] flex items-center justify-center">
-                <span className="text-[#1B2B27] font-medium">
-                  {user?.displayName?.charAt(0) || user?.email?.charAt(0)}
-                </span>
-              </div>
-              <span className="text-sm">{user?.displayName || user?.email}</span>
-            </Link>
           </div>
         </div>
-      </nav>
+      </aside>
 
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex flex-col items-center justify-center">
-          <div className="space-y-4 text-center">
-            <Link 
-              href="/dashboard" 
-              className="block text-gray-300 hover:text-white text-lg py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Overview
-            </Link>
-            <Link 
-              href="/dashboard/proposals" 
-              className="block text-gray-300 hover:text-white text-lg py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Proposals
-            </Link>
-            <Link 
-              href="/dashboard/templates" 
-              className="block text-gray-300 hover:text-white text-lg py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Templates
-            </Link>
-            <Link 
-              href="/dashboard/analytics" 
-              className="block text-gray-300 hover:text-white text-lg py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Analytics
-            </Link>
-            
-            <div className="pt-4 border-t border-[#7CFF9B]/10">
-              <div className="space-y-4">
-                <Link 
-                  href="/dashboard/settings" 
-                  className="block text-gray-300 hover:text-white text-lg py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Settings
-                </Link>
-                <button 
-                  onClick={() => {
-                    setShowModal(true)
-                    setIsMobileMenuOpen(false)
-                  }}
-                  className="block text-gray-300 hover:text-white text-lg py-2 w-full text-center"
-                >
-                  Sign Out
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Sign Out Confirmation Modal */}
+      {/* Sign Out Modal - Reused from original */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-[#1B2B27] border border-[#7CFF9B]/10 rounded-xl p-6 w-full max-w-md mx-4">
@@ -163,4 +140,4 @@ const DashboardNavbar = () => {
   );
 };
 
-export default DashboardNavbar; 
+export default DashboardSidebar; 
