@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react';
-import EditorJS from '@editorjs/editorjs';
+import type { EditorConfig } from '@editorjs/editorjs';
 
 interface EditorProps {
   content: string;
@@ -10,13 +10,15 @@ interface EditorProps {
 }
 
 export default function Editor({ content, onChange, placeholder }: EditorProps) {
-  const editorRef = useRef<EditorJS>();
+  const editorRef = useRef<any>();
 
   useEffect(() => {
-    let editor: EditorJS;
+    let editor: any;
 
     const initEditor = async () => {
       try {
+        const EditorJS = (await import('@editorjs/editorjs')).default;
+        
         editor = new EditorJS({
           holder: 'editor',
           placeholder: placeholder || 'Start writing...',
@@ -30,7 +32,18 @@ export default function Editor({ content, onChange, placeholder }: EditorProps) 
           },
           data: content ? JSON.parse(content) : undefined,
           tools: {
-            // Add your editor.js tools configuration here
+            header: {
+              class: require('@editorjs/header'),
+              config: {
+                placeholder: 'Enter a header',
+                levels: [1, 2, 3],
+                defaultLevel: 2
+              }
+            },
+            paragraph: {
+              class: require('@editorjs/paragraph'),
+              inlineToolbar: true
+            }
           }
         });
 
@@ -44,7 +57,7 @@ export default function Editor({ content, onChange, placeholder }: EditorProps) 
     initEditor();
 
     return () => {
-      if (editorRef.current && typeof editorRef.current.destroy === 'function') {
+      if (editorRef.current?.destroy) {
         try {
           editorRef.current.destroy();
           editorRef.current = undefined;
