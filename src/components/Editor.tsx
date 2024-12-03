@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react';
-import type { EditorConfig } from '@editorjs/editorjs';
 
 interface EditorProps {
   content: string;
@@ -18,6 +17,8 @@ export default function Editor({ content, onChange, placeholder }: EditorProps) 
     const initEditor = async () => {
       try {
         const EditorJS = (await import('@editorjs/editorjs')).default;
+        const Header = (await import('@editorjs/header')).default;
+        const Paragraph = (await import('@editorjs/paragraph')).default;
         
         editor = new EditorJS({
           holder: 'editor',
@@ -33,7 +34,7 @@ export default function Editor({ content, onChange, placeholder }: EditorProps) 
           data: content ? JSON.parse(content) : undefined,
           tools: {
             header: {
-              class: require('@editorjs/header'),
+              class: Header,
               config: {
                 placeholder: 'Enter a header',
                 levels: [1, 2, 3],
@@ -41,7 +42,7 @@ export default function Editor({ content, onChange, placeholder }: EditorProps) 
               }
             },
             paragraph: {
-              class: require('@editorjs/paragraph'),
+              class: Paragraph,
               inlineToolbar: true
             }
           }
